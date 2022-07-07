@@ -69,7 +69,8 @@ class PerformancePoemsBrowserWorkflow(
     props: List<Poem>,
     snapshot: Snapshot?
   ): State {
-    return if (simulatedPerfConfig.useInitializingState) Initializing else NoSelection
+    return Initializing
+    // return if (simulatedPerfConfig.useInitializingState) Initializing else NoSelection
   }
 
   override fun render(
@@ -180,12 +181,12 @@ class PerformancePoemsBrowserWorkflow(
       // Don't try this at home.
       is Initializing -> {
         context.runningWorker(TraceableWorker.from("BrowserInitializing") { Unit }, "init") {
-        isLoading.value = true
-        action {
-          isLoading.value = false
-          state = NoSelection
+          isLoading.value = true
+          action {
+            isLoading.value = false
+            state = NoSelection
+          }
         }
-      }
         return OverviewDetailScreen(overviewRendering = BackStackScreen(BlankScreen))
       }
       is NoSelection -> {

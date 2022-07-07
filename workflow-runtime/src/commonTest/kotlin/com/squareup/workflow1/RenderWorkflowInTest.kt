@@ -184,7 +184,7 @@ class RenderWorkflowInTest {
       paramSource = runtimeMatrix,
       before = ::setup,
     ) { (runtimeConfig1, runtimeConfig2) ->
-      val workflow = Workflow.stateful<Unit, String, Nothing, Pair<String, (String) -> Unit>>(
+      val workflow = Workflow.asStateful<Unit, String, Nothing, Pair<String, (String) -> Unit>>(
         initialState = { _, snapshot ->
           snapshot?.bytes?.parse { it.readUtf8WithLength() } ?: "initial state"
         },
@@ -249,7 +249,7 @@ class RenderWorkflowInTest {
       lateinit var sink: Sink<String>
       var snapped = false
 
-      val workflow = Workflow.stateful<Unit, String, Nothing, String>(
+      val workflow = Workflow.asStateful<Unit, String, Nothing, String>(
         initialState = { _, _ -> "unchanging state" },
         snapshot = {
           Snapshot.of {
@@ -767,7 +767,7 @@ class RenderWorkflowInTest {
       paramSource = runtimeOptions,
       before = ::setup,
     ) { runtimeConfig: RuntimeConfig ->
-      val workflow = Workflow.stateful<Int, Unit, Nothing, Unit>(
+      val workflow = Workflow.asStateful<Int, Unit, Nothing, Unit>(
         snapshot = {
           Snapshot.of {
             throw ExpectedException()

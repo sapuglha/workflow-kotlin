@@ -61,21 +61,26 @@ internal class WorkflowChildNode<
     ) as R
   }
 
+  @Suppress("UNCHECKED_CAST")
   @Composable
   fun <R> Rendering(
     workflow: StatefulWorkflow<*, *, *, *>,
     props: Any?
   ): R {
-    val renderingState = remember { mutableStateOf<R?>(null) }
-    @Suppress("UNCHECKED_CAST")
-    workflowNode.Rendering(
-      workflow as StatefulWorkflow<ChildPropsT, out Any?, ChildOutputT, Nothing>,
-      props as ChildPropsT,
-      setRendering = {
-        renderingState.value = it as R
-      }
+    val rendering = remember { mutableStateOf<R?>(null) }
+    val (node, wf, p) = remember {
+      Triple(
+        workflowNode as WorkflowNode<ChildPropsT, out Any?, ChildOutputT, R>,
+        workflow as StatefulWorkflow<ChildPropsT, out Any?, ChildOutputT, Nothing>,
+        props as ChildPropsT
+      )
+    }
+    node.Rendering(
+      wf,
+      p,
+      rendering,
     )
-    return renderingState.value!!
+    return rendering.value!!
   }
 
   /**

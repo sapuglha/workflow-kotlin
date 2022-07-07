@@ -152,10 +152,6 @@ public fun <PropsT, OutputT, RenderingT> renderWorkflowIn(
   }
 
   scope.launch {
-    // if (runtimeConfig.useComposeInRuntime) {
-    //   //synchronous first render.
-    //   renderSignal.emit(Unit)
-    // }
     while (isActive) {
       // It might look weird to start by consuming the output before getting the rendering below,
       // but remember the first render pass already occurred above, before this coroutine was even
@@ -171,7 +167,7 @@ public fun <PropsT, OutputT, RenderingT> renderWorkflowIn(
       if (runtimeConfig.useComposeInRuntime) {
         if (composeWaitingForFrame) {
           composeWaitingForFrame = false
-          composeRuntimeClock.sendFrame(nanoTime())
+          composeRuntimeClock.sendFrame(0L)
           yield()
         }
       } else {

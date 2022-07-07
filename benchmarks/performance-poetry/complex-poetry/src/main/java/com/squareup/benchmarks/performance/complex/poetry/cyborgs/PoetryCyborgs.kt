@@ -2,6 +2,7 @@ package com.squareup.benchmarks.performance.complex.poetry.cyborgs
 
 import android.widget.ImageButton
 import android.widget.ProgressBar
+import androidx.compose.runtime.currentComposer
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiDevice
@@ -48,6 +49,7 @@ fun UiDevice.resetToRootPoetryList() {
  */
 fun UiDevice.openRavenAndNavigate() {
   waitForIdle()
+  waitForIdle(5_000)
   waitForAndClick(RavenPoemSelector)
   waitForLoadingInterstitial()
   waitForAndClick(By.textStartsWith("Deep into that darkness peering"))

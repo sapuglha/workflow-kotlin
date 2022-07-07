@@ -1,10 +1,10 @@
 package com.squareup.workflow1
 
+import androidx.compose.runtime.BroadcastFrameClock
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.BroadcastFrameClock
 import app.cash.molecule.launchMolecule
 import kotlinx.coroutines.CoroutineScope
 import org.junit.Test
@@ -20,7 +20,6 @@ class ComposeInheritanceTest {
 
     abstract fun someOtherFunction(): T
   }
-
 
   public class Concrete(
     private val payload: String
@@ -65,4 +64,3 @@ class ComposeInheritanceTest {
     assert(testFlow.value.contentEquals("a test again"))
   }
 }
-

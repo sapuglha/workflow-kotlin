@@ -16,6 +16,7 @@ import com.squareup.workflow1.WorkflowInterceptor.RenderContextInterceptor
 import com.squareup.workflow1.WorkflowInterceptor.WorkflowSession
 import com.squareup.workflow1.WorkflowOutput
 import com.squareup.workflow1.action
+import com.squareup.workflow1.asStateful
 import com.squareup.workflow1.contraMap
 import com.squareup.workflow1.identifier
 import com.squareup.workflow1.parse
@@ -498,7 +499,7 @@ internal class WorkflowNodeTest {
   }
 
   @Test fun `snapshots non-empty without children`() {
-    val workflow = Workflow.stateful<String, String, Nothing, String>(
+    val workflow = Workflow.asStateful<String, String, Nothing, String>(
       initialState = { props, snapshot ->
         snapshot?.bytes?.parse {
           it.readUtf8WithLength()
@@ -536,7 +537,7 @@ internal class WorkflowNodeTest {
   }
 
   @Test fun `snapshots empty without children`() {
-    val workflow = Workflow.stateful<String, String, Nothing, String>(
+    val workflow = Workflow.asStateful<String, String, Nothing, String>(
       initialState = { props, snapshot -> snapshot?.bytes?.utf8() ?: props },
       render = { _, state -> state },
       snapshot = { Snapshot.of("restored") }
@@ -567,7 +568,7 @@ internal class WorkflowNodeTest {
   @Test fun `snapshots non-empty with children`() {
     var restoredChildState: String? = null
     var restoredParentState: String? = null
-    val childWorkflow = Workflow.stateful<String, String, Nothing, String>(
+    val childWorkflow = Workflow.asStateful<String, String, Nothing, String>(
       initialState = { props, snapshot ->
         snapshot?.bytes?.parse {
           it.readUtf8WithLength()
@@ -582,7 +583,7 @@ internal class WorkflowNodeTest {
         }
       }
     )
-    val parentWorkflow = Workflow.stateful<String, String, Nothing, String>(
+    val parentWorkflow = Workflow.asStateful<String, String, Nothing, String>(
       initialState = { props, snapshot ->
         snapshot?.bytes?.parse {
           it.readUtf8WithLength()
@@ -667,7 +668,7 @@ internal class WorkflowNodeTest {
   }
 
   @Test fun `restore gets props`() {
-    val workflow = Workflow.stateful<String, String, Nothing, String>(
+    val workflow = Workflow.asStateful<String, String, Nothing, String>(
       initialState = { props, snapshot ->
         snapshot?.bytes?.parse {
           // Tags the restored state with the props so we can check it.
@@ -926,7 +927,7 @@ internal class WorkflowNodeTest {
           .also { interceptedSnapshot = it }
       }
     }
-    val workflow = Workflow.stateful<String, String, Nothing, String>(
+    val workflow = Workflow.asStateful<String, String, Nothing, String>(
       initialState = { _, _ -> "state" },
       render = { _, state -> state },
       snapshot = { state -> Snapshot.of("snapshot($state)") }
@@ -967,7 +968,7 @@ internal class WorkflowNodeTest {
           .also { interceptedSnapshot = it }
       }
     }
-    val workflow = Workflow.stateful<String, String, Nothing, String>(
+    val workflow = Workflow.asStateful<String, String, Nothing, String>(
       initialState = { _, _ -> "state" },
       render = { _, state -> state },
       snapshot = { null }

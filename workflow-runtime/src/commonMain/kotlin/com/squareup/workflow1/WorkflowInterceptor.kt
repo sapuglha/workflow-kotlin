@@ -1,6 +1,7 @@
 package com.squareup.workflow1
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.squareup.workflow1.WorkflowInterceptor.RenderContextInterceptor
 import com.squareup.workflow1.WorkflowInterceptor.WorkflowSession
 import kotlinx.coroutines.CoroutineScope
@@ -302,24 +303,32 @@ internal fun <P, S, O, R> WorkflowInterceptor.intercept(
     ): R {
       // Cannot annotate anonymous functions with @Composable and cannot infer type of
       // this when a lambda. So need this variable to make it explicit.
-      val anonProceed: @Composable (P, S, RenderContextInterceptor<P, S, O>?) -> R =
-        @Composable { props: P,
-          state: S,
-          interceptor: RenderContextInterceptor<P, S, O>? ->
-          val interceptedContext = interceptor?.let { InterceptedRenderContext(context, it) }
-            ?: context
-          workflow.Rendering(
-            props,
-            state,
-            RenderContext(interceptedContext, this)
-          )
+      // We want to remember it so we don't trigger unecessary recomposition.
+      val reifiedProceed: @Composable (P, S, RenderContextInterceptor<P, S, O>?) -> R =
+        remember<@Composable (P, S, RenderContextInterceptor<P, S, O>?) -> R>(
+          context
+        ) {
+          @Composable { props: P,
+            state: S,
+            interceptor: RenderContextInterceptor<P, S, O>? ->
+            val renderContext = remember(state, workflow) {
+              val interceptedContext = interceptor?.let { InterceptedRenderContext(context, it) }
+                ?: context
+              RenderContext(interceptedContext, this)
+            }
+            workflow.Rendering(
+              props,
+              state,
+              renderContext
+            )
+          }
         }
       return Rendering(
         renderProps = renderProps,
         renderState = renderState,
         context = context,
         session = workflowSession,
-        proceed = anonProceed
+        proceed = reifiedProceed
       )
     }
 

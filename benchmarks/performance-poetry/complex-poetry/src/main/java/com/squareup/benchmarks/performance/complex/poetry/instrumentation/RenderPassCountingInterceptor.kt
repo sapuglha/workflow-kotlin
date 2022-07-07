@@ -1,6 +1,8 @@
 package com.squareup.benchmarks.performance.complex.poetry.instrumentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import com.squareup.workflow1.BaseRenderContext
 import com.squareup.workflow1.WorkflowInterceptor
 import com.squareup.workflow1.WorkflowInterceptor.RenderContextInterceptor
@@ -41,12 +43,13 @@ class RenderPassCountingInterceptor : WorkflowInterceptor, Resettable {
     proceed: @Composable
     (P, S, RenderContextInterceptor<P, S, O>?) -> R
   ): R {
-    // TODO: This counting is a side effect that is technically illegal here in a Composable and it
-    // is certainly not idempotent.
-    val isRoot = before(session, renderState)
-    return proceed(renderProps, renderState, null).also {
+    val isRoot = remember (session, renderState) {
+      before(session, renderState)
+    }
+    SideEffect {
       after(isRoot)
     }
+    return proceed(renderProps, renderState, null)
   }
 
   private fun <S> before(
